@@ -137,17 +137,41 @@
 */
 const API_BASE = 'https://apiservi.onrender.com'; // <-- reemplaza por tu dominio público o deja '' si está en el mismo origen
 
+let loadingMessageInterval = null;
+
 function showLoading(message) {
     const overlay = document.getElementById('loadingScreen');
     const loadingText = document.getElementById('loadingText');
     if (message) loadingText.textContent = message;
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
+    
+    const loadingMessages = [
+        'Cargando información...',
+        'Consultando el estado de tu envío...',
+        'Buscando datos en nuestro sistema...',
+        'Verificando la información...',
+        'Procesando tu solicitud...',
+        'Rastreando tu paquete...',
+        'Obteniendo detalles del envío...',
+        'Casi listo, un momento más...'
+    ];
+    
+    let messageIndex = 0;
+    loadingMessageInterval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % loadingMessages.length;
+        loadingText.textContent = loadingMessages[messageIndex];
+    }, 3000);
 }
 
 function hideLoading() {
     const overlay = document.getElementById('loadingScreen');
     overlay.style.display = 'none';
+    
+    if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+    }
 }
 
 function validateNumero(numero) {
