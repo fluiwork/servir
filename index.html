@@ -1,314 +1,386 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servientrega</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        @media (max-width: 768px) {
-            .main-content {
-                height: 40vh !important;
-                min-height: 430px !important;
-            }
-        }
-        /* small helper so loading overlay centers correctly if flex wasn't applied via CSS */
-        #loadingScreen { display: none; align-items: center; justify-content: center; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Envíos Nacionales en Colombia — Rápido y Seguro</title>
+  <meta name="description" content="Información, consejos y tarifas orientativas sobre envíos nacionales dentro de Colombia. Empaque, tiempos de entrega y cómo elegir la mejor opción." />
+  <style>
+    /* --- Reset simple --- */
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --accent:#0066b2;
+      --muted:#6b7280;
+      --success:#0f9d58;
+      --danger:#d64545;
+      --glass: rgba(255,255,255,0.6);
+      --maxw:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: linear-gradient(180deg, #eef4fb 0%, var(--bg) 100%);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding:32px 16px;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{
+      width:100%;
+      max-width:var(--maxw);
+    }
+
+    /* --- Header / Hero --- */
+    header.hero{
+      background: linear-gradient(90deg, rgba(0,102,178,0.08), rgba(5,150,105,0.04));
+      border-radius:14px;
+      padding:28px;
+      display:flex;
+      gap:20px;
+      align-items:center;
+      margin-bottom:20px;
+      box-shadow:0 6px 18px rgba(12,20,40,0.06);
+    }
+    .hero .left{
+      flex:1;
+    }
+    .brand{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:10px;
+      display:inline-grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),#02b987);
+      color:white;font-weight:700;
+    }
+    h1{margin:0;font-size:1.45rem}
+    p.lead{margin:8px 0 0;color:var(--muted)}
+
+    /* CTA & card */
+    .cta{
+      background:var(--card);
+      padding:14px;
+      border-radius:10px;
+      box-shadow:0 4px 12px rgba(12,20,40,0.05);
+      min-width:260px;
+      text-align:left;
+    }
+    .cta small{display:block;color:var(--muted);margin-bottom:6px}
+    .cta .btn{
+      display:inline-block;
+      padding:10px 14px;
+      border-radius:8px;
+      background:var(--accent);
+      color:#fff;
+      text-decoration:none;
+      font-weight:600;
+    }
+    .cta .mini{
+      font-size:0.9rem;color:var(--muted);margin-top:8px;display:block;
+    }
+
+    /* --- Grid for sections --- */
+    main{display:grid;gap:18px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:16px;
+    }
+    .card{
+      background:var(--card);
+      padding:18px;
+      border-radius:12px;
+      box-shadow:0 6px 18px rgba(12,20,40,0.04);
+    }
+    .span-8{grid-column:span 8}
+    .span-4{grid-column:span 4}
+    .span-12{grid-column:span 12}
+
+    h2{margin:0 0 10px;font-size:1.1rem}
+    .muted{color:var(--muted);font-size:0.95rem}
+
+    /* Services list */
+    .services{display:flex;flex-direction:column;gap:12px}
+    .service{
+      display:flex;gap:12px;align-items:flex-start;
+    }
+    .service svg{flex:0 0 38px;border-radius:8px;padding:8px;background:linear-gradient(180deg,#f0f6fb,#ffffff);}
+
+    /* Table tarifas */
+    table{width:100%;border-collapse:collapse;font-size:0.95rem}
+    th,td{padding:10px;border-bottom:1px solid #eef2f6;text-align:left}
+    th{background:rgba(2,6,23,0.02);font-weight:600}
+
+    /* Steps */
+    .steps{display:flex;flex-direction:column;gap:10px}
+    .step{display:flex;gap:12px;align-items:flex-start}
+    .bubble{width:34px;height:34px;border-radius:10px;background:var(--glass);display:grid;place-items:center;font-weight:700}
+
+    /* Tips */
+    .tips{display:flex;flex-wrap:wrap;gap:10px}
+    .tip{flex:1 1 220px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfdff);}
+
+    /* FAQ accordion */
+    .faq-item{border-radius:8px;overflow:hidden}
+    .faq-q{cursor:pointer;padding:12px;background:#f8fbff;border-bottom:1px solid #eef5ff;display:flex;justify-content:space-between;align-items:center}
+    .faq-a{padding:12px;display:none;background:white}
+
+    /* Footer */
+    footer{margin-top:14px;text-align:center;color:var(--muted);font-size:0.9rem}
+
+    /* Responsive */
+    @media (max-width:880px){
+      .grid{grid-template-columns:repeat(6,1fr)}
+      .span-8{grid-column:span 6}
+      .span-4{grid-column:span 6}
+    }
+    @media (max-width:520px){
+      .hero{flex-direction:column;align-items:stretch}
+      body{padding:18px}
+    }
+
+    /* small utilities */
+    .badge{display:inline-block;padding:6px 8px;border-radius:999px;font-weight:600;background:rgba(2,6,23,0.06)}
+    .muted-2{color:#8592a6;font-size:0.9rem}
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <img src="img/logo-servientrega-blanco.svg" alt="">
-            </div>
-            <nav class="nav-menu desktop-only">
-                <a href="#">Rastrear</a>
-                <a href="#">Cotizar</a>
-                <a href="#">Recoger</a>
-                <a href="#">Soluciones</a>
-                <a href="#">Nuestra red</a>
-            </nav>
-            <button class="login-btn desktop-only">Ingresar</button>
+  <div class="wrap">
+    <header class="hero" role="banner" aria-label="Encabezado - Envíos nacionales en Colombia">
+      <div class="left">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">EC</div>
+          <div>
+            <strong>Envíos Colombia</strong><br>
+            <small class="muted">Soluciones para transportar tus paquetes dentro del país</small>
+          </div>
         </div>
+        <h1>Envíos nacionales: rápido, seguro y pensado para Colombia</h1>
+        <p class="lead">Guía práctica con tiempos orientativos, consejos de empaque y cómo elegir la mejor opción según peso, destino y urgencia.</p>
+      </div>
+
+      <aside class="cta" aria-label="Cotiza tu envío">
+        <small>Calcula una cotización orientativa</small>
+        <div style="margin:10px 0;">
+          <form onsubmit="event.preventDefault(); alert('Esta es una demo. Implementa un backend para cotizaciones.');">
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <input type="number" min="0" placeholder="Peso (kg)" required style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef7" />
+              <input type="text" placeholder="Ciudad destino" required style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef7" />
+            </div>
+            <button class="btn" type="submit">Obtener estimado</button>
+          </form>
+        </div>
+        <span class="mini">Tiempos: 24-72h en ciudades principales. Zonas rurales pueden variar.</span>
+      </aside>
     </header>
-     <div class="main-content" style="background-color: #f5f5f5; padding: 0; width: 100%;">
-            <div class="content-left">
-                <div class="pink-line"></div>
-                <div class="content-text">
-                    <h1 class="main-title">Conoce nuestras líneas de atención</h1>
-                    <button class="contact-btn">Contacto</button>
-                </div>
-            </div>
-            <div class="content-right">
-              <img src="img/pagina.png" style="width: 70%;" alt="" id="heroImage">
-            </div>
-        </div>
 
-    <!-- Main Content -->
-    <main style="background-color: white;">
-        <!-- Search Section Desktop -->
-        <div class="search-section">
-            <form class="search-form" id="searchFormDesktop">
-                <label class="search-label">Consultar</label>
-                <select class="search-select">
-                    <option>Envíos</option>
-                    <option>Rastreo</option>
-                    <option>Cotización</option>
-                </select>
-                <input type="text" class="search-input" id="searchInputDesktop" placeholder="Ingresa el # de guía">
-                <button type="submit" class="search-btn" id="searchBtnDesktop">
-                    <i class="fas fa-arrow-right"></i>
-                </button>
-            </form>
-        </div>
+    <main>
+      <section class="grid" aria-label="Contenido principal">
+        <!-- Información general -->
+        <article class="card span-8" aria-labelledby="info-title">
+          <h2 id="info-title">¿Cómo funcionan los envíos nacionales?</h2>
+          <p class="muted">En Colombia, los envíos nacionales combinan servicios de mensajería urbana, transporte intermunicipal y transporte de carga. La elección depende de tres factores principales: <strong>peso/volumen</strong>, <strong>distancia</strong> y <strong>urgencia</strong>.</p>
 
-        <!-- Search Section Mobile -->
-        <div class="consultar-container">
-            <div class="consultar-header">
-                <h2 class="consultar-title">Consultar</h2>
-                <div class="consultar-form">
-                    <div class="dropdown-container">
-                        <select class="dropdown-select" id="enviosSelect">
-                            <option value="envios">Envíos</option>
-                            <option value="paquetes">Paquetes</option>
-                            <option value="documentos">Documentos</option>
-                        </select>
-                        <i class="fas fa-chevron-down dropdown-arrow"></i>
-                    </div>
-                    <div class="input-container">
-                        <input type="text" class="search-input" placeholder="Ingresa el # de guía" id="searchInput">
-                    </div>
-                    <button type="button" class="search-button" id="searchBtnMobile">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+          <div style="margin-top:12px" class="services" aria-hidden="false">
+            <div class="service">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect width="24" height="24" rx="5" fill="#f0f8ff"></rect>
+                <path d="M3 7h12v6H3z" stroke="#0b72b2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <strong>Mensajería urbana</strong>
+                <div class="muted-2">Ideal para entregas en la misma ciudad. Rápido y pensado para paquetes pequeños.</div>
+              </div>
             </div>
-        </div>
 
-        <!-- Services Section -->
-        <div class="services-section">
-            <h2 class="services-title" style="padding-top: 5%;">Conoce nuestras soluciones logísticas</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <img src="img/ico-big-transporte-entrega.svg" alt="">
-                    <h3 class="service-title">Transporte y Entrega | Soluciones Logísticas | Servientrega</h3>
-                    <p class="service-description">Recogemos en tu puerta y entregamos en el tiempo que requieras.</p>
-                    <a href="#" class="service-link">Ver más <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="service-card">
-                    <img src="img/ico-big-soluciones-logistica.svg" alt="">
-                    <h3 class="service-title">Soluciones Logísticas Eficientes</h3>
-                    <p class="service-description">Optimizamos tu logística para campañas y tu almacenamiento.</p>
-                    <a href="#" class="service-link">Ver más <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="service-card">
-                    <img src="img/ico-digitales.svg" alt="">
-                    <h3 class="service-title">Soluciones Digitales | Innovación y Tecnología Logística</h3>
-                    <p class="service-description">Entregas electrónicas, SMS, email masivo y más para publicidad, legales y otros.</p>
-                    <a href="#" class="service-link">Ver más <i class="fas fa-arrow-right"></i></a>
-                </div>
+            <div class="service">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect width="24" height="24" rx="5" fill="#fff6f6"></rect>
+                <path d="M3 12h14l3 4v2H3z" stroke="#d63b3b" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <strong>Envíos intermunicipales</strong>
+                <div class="muted-2">Conexiones entre ciudades principales (Bogotá, Medellín, Cali, Barranquilla, Bucaramanga, etc.).</div>
+              </div>
             </div>
-        </div>
+
+            <div class="service">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect width="24" height="24" rx="5" fill="#f6fffb"></rect>
+                <path d="M6 9l6 6 6-6" stroke="#0f9d58" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <strong>Transporte de carga</strong>
+                <div class="muted-2">Para bultos grandes o cargas paletizadas. Normalmente requiere logística previa y cotización.</div>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="margin-top:16px">Consideraciones clave</h3>
+          <ul class="muted-2" style="margin:8px 0 0 18px">
+            <li>Verifica que el transportador ofrezca <strong>seguimiento (tracking)</strong> y confirmación de entrega.</li>
+            <li>Compara límites de seguro: algunos servicios incluyen cobertura mínima; otros permiten seguros adicionales.</li>
+            <li>En zonas rurales, confirma si hay recolección puerta a puerta o puntos de entrega.</li>
+          </ul>
+        </article>
+
+        <!-- Tarifas orientativas -->
+        <aside class="card span-4" aria-labelledby="tarifas-title">
+          <h2 id="tarifas-title">Tarifas orientativas</h2>
+          <p class="muted">Valores aproximados y orientativos — siempre cotiza con el transportador.</p>
+          <table role="table" aria-label="Tabla de tarifas orientativas">
+            <thead>
+              <tr><th>Peso</th><th>Destino</th><th>Desde</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0 - 1 kg</td><td>Local (misma ciudad)</td><td>$8.000 COP</td></tr>
+              <tr><td>0 - 1 kg</td><td>Intermunicipal (capitales)</td><td>$12.000 COP</td></tr>
+              <tr><td>1 - 5 kg</td><td>Intermunicipal</td><td>$18.000 COP</td></tr>
+              <tr><td>5 - 20 kg</td><td>Regional</td><td>$28.000 COP</td></tr>
+              <tr><td>+20 kg</td><td>Carga</td><td>Cotización</td></tr>
+            </tbody>
+          </table>
+          <p class="muted-2" style="margin-top:10px;font-size:0.9rem">Estos precios son ejemplos. Influyen tamaño, seguro, recolección, impuestos y peajes.</p>
+        </aside>
+
+        <!-- Pasos para enviar -->
+        <article class="card span-12" aria-labelledby="pasos-title">
+          <h2 id="pasos-title">Pasos sencillos para enviar un paquete</h2>
+          <div class="steps" style="margin-top:8px">
+            <div class="step">
+              <div class="bubble">1</div>
+              <div>
+                <strong>Prepáralo</strong> — Protege objetos frágiles con burbuja y relleno. Evita dejar espacios vacíos.
+              </div>
+            </div>
+            <div class="step">
+              <div class="bubble">2</div>
+              <div>
+                <strong>Mide y pesa</strong> — El precio depende de peso real o volumétrico. Usa una balanza y toma medidas.
+              </div>
+            </div>
+            <div class="step">
+              <div class="bubble">3</div>
+              <div>
+                <strong>Elige servicio</strong> — Mensajería, económica o urgente. Cotiza y compara tiempos y cobertura.
+              </div>
+            </div>
+            <div class="step">
+              <div class="bubble">4</div>
+              <div>
+                <strong>Etiqueta claramente</strong> — Nombre completo, dirección completa, ciudad, teléfono y documento (si aplica).
+              </div>
+            </div>
+            <div class="step">
+              <div class="bubble">5</div>
+              <div>
+                <strong>Seguimiento</strong> — Guarda el número de guía y usa la herramienta de tracking del transportador hasta la entrega.
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Consejos de empaque -->
+        <aside class="card span-4" aria-labelledby="tips-title">
+          <h2 id="tips-title">Consejos de empaque</h2>
+          <div class="tips" style="margin-top:8px">
+            <div class="tip">
+              <strong>Protección interna</strong>
+              <div class="muted-2">Relleno de papel, espuma o maní de empaque para evitar golpes.</div>
+            </div>
+            <div class="tip">
+              <strong>Caja adecuada</strong>
+              <div class="muted-2">Usa cajas rígidas y evita reutilizar cajas muy dañadas.</div>
+            </div>
+            <div class="tip">
+              <strong>Impermeabiliza</strong>
+              <div class="muted-2">Bolsa plástica interna para proteger frente a humedad o lluvia.</div>
+            </div>
+            <div class="tip">
+              <strong>Sella bien</strong>
+              <div class="muted-2">Cinta de embalaje resistente en todas las solapas.</div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- FAQ -->
+        <article class="card span-8" aria-labelledby="faq-title">
+          <h2 id="faq-title">Preguntas frecuentes</h2>
+
+          <div class="faq-item" style="margin-top:10px">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span>¿Cuánto tarda un envío entre ciudades principales?</span>
+              <span class="badge">Respuesta</span>
+            </div>
+            <div class="faq-a">
+              <p class="muted-2">En general 24 a 72 horas si ambas ciudades son capitales o cabeceras. Zonas apartadas pueden tardar más.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" style="margin-top:8px">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span>¿Qué sucede si el paquete se pierde?</span>
+              <span class="badge">Respuesta</span>
+            </div>
+            <div class="faq-a">
+              <p class="muted-2">Contacta al transportador con el número de guía. Si contrataste seguro, revisa condiciones para reclamación.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" style="margin-top:8px">
+            <div class="faq-q" onclick="toggleFaq(this)">
+              <span>¿Puedo enviar productos frágiles?</span>
+              <span class="badge">Respuesta</span>
+            </div>
+            <div class="faq-a">
+              <p class="muted-2">Sí, pero empaca correctamente y considera contratar seguro adicional si tiene alto valor.</p>
+            </div>
+          </div>
+
+        </article>
+
+      </section>
     </main>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="text-align: center; color: white;">
-            <i class="fas fa-spinner fa-spin" style="font-size: 50px; margin-bottom: 20px;"></i>
-            <p id="loadingText">Cargando información...</p>
+    <footer class="card" role="contentinfo" style="margin-top:16px">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center">
+        <div>
+          <strong>¿Necesitas ayuda?</strong>
+          <div class="muted-2">Llámanos: <span style="font-weight:700">+57 300 000 0000</span> — Correo: <a href="mailto:info@envioscolombia.co">info@envioscolombia.co</a></div>
         </div>
-    </div>
+        <div class="muted">© <span id="year"></span> Envíos Colombia — Información orientativa</div>
+      </div>
+    </footer>
+  </div>
 
-<script>
-/*
-  Robust index.js logic:
-  - Clears previous result when a new search starts (evita datos estáticos viejos).
-  - Usa fetch con cache: 'no-store' + AbortController timeout.
-  - Sólo guarda sessionStorage.rastroResult cuando resultado.success === true.
-  - Console logs para debug.
-*/
+  <script>
+    // Fecha en el footer
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-/* Ajusta aquí la URL pública de tu tunnel (cloudflared) si tu frontend está en otro dominio.
-   Si sirves frontend y backend en el mismo host puedes dejar '' para usar rutas relativas.
-*/
-const API_BASE = 'https://apiservi.onrender.com'; // <-- reemplaza por tu dominio público o deja '' si está en el mismo origen
-
-let loadingMessageInterval = null;
-
-function showLoading(message) {
-    const overlay = document.getElementById('loadingScreen');
-    const loadingText = document.getElementById('loadingText');
-    if (message) loadingText.textContent = message;
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    
-    const loadingMessages = [
-        'Cargando información...',
-        'Consultando el estado de tu envío...',
-        'Buscando datos en nuestro sistema...',
-        'Verificando la información...',
-        'Procesando tu solicitud...',
-        'Rastreando tu paquete...',
-        'Obteniendo detalles del envío...',
-        'Casi listo, un momento más...'
-    ];
-    
-    let messageIndex = 0;
-    loadingMessageInterval = setInterval(() => {
-        messageIndex = (messageIndex + 1) % loadingMessages.length;
-        loadingText.textContent = loadingMessages[messageIndex];
-    }, 3000);
-}
-
-function hideLoading() {
-    const overlay = document.getElementById('loadingScreen');
-    overlay.style.display = 'none';
-    
-    if (loadingMessageInterval) {
-        clearInterval(loadingMessageInterval);
-        loadingMessageInterval = null;
-    }
-}
-
-function validateNumero(numero) {
-    if (!numero) return 'Debes ingresar un número de guía';
-    if (!/^\d+$/.test(numero)) return 'El número de guía debe contener solo dígitos';
-    return null;
-}
-
-async function sendRastrear(numero) {
-    const url = (API_BASE && API_BASE.length) ? `${API_BASE}/rastrear` : '/rastrear';
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 120000); // 120s timeout
-
-    try {
-        console.debug('[rastrear] POST ->', url, 'numero:', numero);
-        const resp = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ numero_guia: numero }),
-            signal: controller.signal,
-            cache: 'no-store', // evitar respuestas cacheadas
-            // credentials: 'same-origin' // si necesitas cookies, descomenta
-        });
-
-        clearTimeout(timeout);
-
-        // Verificar status
-        const text = await resp.text(); // leemos texto primero para manejar JSON o no-JSON
-        let parsed;
-        try {
-            parsed = text ? JSON.parse(text) : null;
-        } catch (e) {
-            console.error('[rastrear] respuesta no JSON:', text);
-            throw new Error('Respuesta inválida del servidor (no JSON). Revisa logs del backend.');
-        }
-
-        if (!resp.ok) {
-            const errMsg = (parsed && parsed.error) ? parsed.error : `Error en la petición: ${resp.status}`;
-            throw new Error(errMsg);
-        }
-
-        // parsed ahora es JSON
-        return parsed;
-    } catch (err) {
-        clearTimeout(timeout);
-        if (err.name === 'AbortError') {
-            throw new Error('El servidor está tardando demasiado. Intenta de nuevo en unos segundos.');
-        }
-        throw err;
-    }
-}
-
-// Helper: start a search (shared by desktop and mobile)
-async function startSearch(numero) {
-    const err = validateNumero(numero);
-    if (err) { alert(err); return; }
-
-    // Limpieza de cualquier resultado viejo PARA EVITAR que detalle.html muestre datos estáticos antiguos
-    try {
-        sessionStorage.removeItem('rastroResult');
-        sessionStorage.removeItem('rastroNumero');
-    } catch (e) {
-        console.warn('[rastrear] no se pudo limpiar sessionStorage:', e);
+    // FAQ toggle simple
+    function toggleFaq(el){
+      var a = el.nextElementSibling;
+      var open = a.style.display === 'block';
+      // cerrar todos
+      document.querySelectorAll('.faq-a').forEach(function(n){ n.style.display = 'none'; });
+      if(!open) a.style.display = 'block';
     }
 
-    showLoading('Cargando información...');
-
-    try {
-        const resultado = await sendRastrear(numero);
-
-        if (!resultado) {
-            hideLoading();
-            alert('Respuesta vacía del servidor');
-            return;
-        }
-
-        // Si backend devuelve success === true, guardar y redirigir
-        if (resultado.success === true) {
-            try {
-                sessionStorage.setItem('rastroResult', JSON.stringify(resultado));
-                sessionStorage.setItem('rastroNumero', numero);
-                console.debug('[rastrear] Resultado guardado en sessionStorage');
-            } catch (e) {
-                console.error('[rastrear] error guardando sessionStorage', e);
-                hideLoading();
-                alert('Error guardando resultado en el navegador.');
-                return;
-            }
-
-            // Redirigir a detalle.html tras un breve delay para asegurar que storage esté listo
-            hideLoading();
-            window.location.href = 'detalle.html';
-            return;
-        } else {
-            // Backend devolvió success false -> mostrar el error y no redirigir ni guardar
-            hideLoading();
-            const errText = resultado.error || 'No se encontró información para este número de guía.';
-            alert(errText);
-            return;
-        }
-
-    } catch (err) {
-        hideLoading();
-        console.error('[rastrear] error durante la búsqueda:', err);
-        alert(err.message || 'Error desconocido durante la búsqueda');
-    }
-}
-
-// Desktop form submit
-document.addEventListener('DOMContentLoaded', function () {
-    const formDesktop = document.getElementById('searchFormDesktop');
-    if (formDesktop) {
-        formDesktop.addEventListener('submit', function (e) {
-            e.preventDefault(); // evitar recarga
-            const input = document.getElementById('searchInputDesktop');
-            const numero = input ? input.value.trim() : '';
-            startSearch(numero);
-        });
-    }
-
-    // Mobile button handler
-    const btnMobile = document.getElementById('searchBtnMobile');
-    if (btnMobile) {
-        btnMobile.addEventListener('click', function () {
-            const input = document.getElementById('searchInput');
-            const numero = input ? input.value.trim() : '';
-            startSearch(numero);
-        });
-    }
-
-    // Optionally, clear stale result on initial load to avoid showing old data if user opens detalle directly
-    // (comentado porque podría no ser deseado). Si quieres forzar la limpieza al cargar index,
-    // descomenta las dos líneas siguientes:
-    // try { sessionStorage.removeItem('rastroResult'); sessionStorage.removeItem('rastroNumero'); } catch(e){}
-});
-</script>
-
+    // Mejor experiencia: permitir Enter para cerrar FAQ cuando está abierta (accesibilidad mínima)
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        document.querySelectorAll('.faq-a').forEach(function(n){ n.style.display = 'none'; });
+      }
+    });
+  </script>
 </body>
 </html>
